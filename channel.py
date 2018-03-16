@@ -49,7 +49,5 @@ class public_channel(object):  # insecure public classical/quantum channel
                     clients.sendall(data)
 
         conn.close()
-<<<<<<< HEAD
-=======
 
->>>>>>> ae04293f6a313abd3f5fc8e6370d1767d7d02adb
+

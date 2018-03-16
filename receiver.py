@@ -18,10 +18,9 @@ class receiver(object):
                 pulse = data.split(":")
                 if "qpulse" in data and len(pulse) == 2:
                     if str(pulse[1]).isdigit():
-                        pulse_length = pulse[1]
+                        pulse_length = int(pulse[1])+1
                         self.basis = [p.basis for p in self.create_photon_pulse(pulse_length)]
                         break
-            self.socket.close()
         except socket.error:
             raise qsocketerror("not connected to any channel")
 
