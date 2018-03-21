@@ -6,18 +6,39 @@ import ast
 class sender(object):
     def __init__(self):
         self.photon_pulse_size = 170
-        self.min_shared = 20
+        self.min_shared = 20  # safe option
         self.photon_pulse = self.create_photon_pulse()
         self.buffer_size = 1024
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.basis = []
         self.other_basis = []
+        self.shared_key = []
+        self.sub_shared_key = []
 
     def create_photon_pulse(self):
         photon_pulse = []
-        for i in range(1, self.photon_pulse_size):
+        for i in range(1, self.photon_pulse_size+1):
             photon_pulse.append(photon())
         return photon_pulse
+
+    def create_shared_key(self, basis, other_basis):
+        if len(basis) != len(other_basis):
+            raise qobjecterror("both pulses must contain the same amount of photons")
+        else:
+            i = 0
+            while i != len(basis):
+                if basis[i] == other_basis[i]:
+                    if i == 0:
+                        self.shared_key.append(0)
+                    elif i == 90:
+                        self.shared_key.append(1)
+                    elif i == 45:
+                        self.shared_key.append(0)
+                    elif i == 135:
+                        self.shared_key.append(1)
+
+    def create_sub_shared_key(self, shared_key):
+        self.sub_shared_key = shared_key[:(len(shared_key)//2)]
 
     def send_photon_pulse(self, pulse):
         if not isinstance(pulse, list):
@@ -61,3 +82,5 @@ class sender(object):
         except socket.error:
             raise qsocketerror("unable to connect")
 
+    def reset_socket(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

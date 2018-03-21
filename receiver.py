@@ -5,10 +5,13 @@ import ast
 
 class receiver(object):
     def __init__(self):
+        self.min_shared = 20  # safe option
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.buffer_size = 1024
         self.basis = []
         self.other_basis = []
+        self.shared_key = []
+        self.sub_shared_key = []
 
     def listen_quantum(self):
         try:
@@ -56,8 +59,36 @@ class receiver(object):
             photon_pulse.append(photon())
         return photon_pulse
 
+    def create_shared_key(self, basis, other_basis):
+        if len(basis) != len(other_basis):
+            raise qobjecterror("both pulses must contain the same amount of photons")
+        else:
+            i = 0
+            while i != len(basis):
+                if basis[i] == other_basis[i]:
+                    if i == 0:
+                        self.shared_key.append(0)
+                    elif i == 90:
+                        self.shared_key.append(1)
+                    elif i == 45:
+                        self.shared_key.append(0)
+                    elif i == 135:
+                        self.shared_key.append(1)
+
+    def create_sub_shared_key(self, shared_key):
+        self.sub_shared_key = shared_key[:(len(shared_key)//2)]
+
+    def verify(self):
+        if len(self.shared_key) == 0 or len(self.sub_shared_key) == 0:
+            raise qobjecterror("key is not defined")
+        else:
+            pass
+
     def connect_to_channel(self, address, port):
         try:
             self.socket.connect((address, port))
         except socket.error:
             raise qsocketerror("unable to connect")
+
+    def reset_socket(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
