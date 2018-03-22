@@ -3,6 +3,8 @@ import socket
 from qexceptions import qsocketerror, qobjecterror
 import ast
 
+# TODO: make multithreaded classical receiver & sender
+
 class receiver(object):
     def __init__(self):
         self.min_shared = 20  # safe option
@@ -22,7 +24,7 @@ class receiver(object):
                 if "qpulse" in data and len(pulse) == 2:
                     if str(pulse[1]).isdigit():
                         pulse_length = int(pulse[1])+1
-                        self.basis = [p.basis for p in self.create_photon_pulse(pulse_length)]
+                        self.basis = [p.polarization for p in self.create_photon_pulse(pulse_length)]
                         break
         except socket.error:
             raise qsocketerror("not connected to any channel")
@@ -66,14 +68,15 @@ class receiver(object):
             i = 0
             while i != len(basis):
                 if basis[i] == other_basis[i]:
-                    if i == 0:
+                    if basis[i] == 0:
                         self.shared_key.append(0)
-                    elif i == 90:
+                    elif basis[i] == 90:
                         self.shared_key.append(1)
-                    elif i == 45:
+                    elif basis[i] == 45:
                         self.shared_key.append(0)
-                    elif i == 135:
+                    elif basis[i] == 135:
                         self.shared_key.append(1)
+                i += 1
 
     def create_sub_shared_key(self, shared_key):
         self.sub_shared_key = shared_key[:(len(shared_key)//2)]
@@ -91,4 +94,5 @@ class receiver(object):
             raise qsocketerror("unable to connect")
 
     def reset_socket(self):
+        self.socket.close()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

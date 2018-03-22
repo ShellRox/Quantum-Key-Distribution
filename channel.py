@@ -47,7 +47,5 @@ class public_channel(object):  # insecure public classical/quantum channel
                 print("{0}: {1}".format(addr[0], data))
                 for clients in self.conn_list:
                     clients.sendall(data)
-
+        self.ip_list.remove(addr)
         conn.close()
-
-

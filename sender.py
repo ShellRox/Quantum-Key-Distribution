@@ -10,7 +10,7 @@ class sender(object):
         self.photon_pulse = self.create_photon_pulse()
         self.buffer_size = 1024
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.basis = []
+        self.basis = [photon().polarization for p in self.photon_pulse]
         self.other_basis = []
         self.shared_key = []
         self.sub_shared_key = []
